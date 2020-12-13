@@ -8,8 +8,12 @@ info:
     email: "1171071@isep.ipp.pt"
     
 servers:
-  - url: https://acme.reviews.com/v1
-    description: Development server 
+  - url: https://psidi-customers.herokuapp.com/v1
+    description: Profile server   
+  - url: https://reviews-psidi.herokuapp.com/
+    description: Evaluation server 
+  - url: https://catalog-psidi.herokuapp.com/v1
+    description: Catalog server 
     
 tags:
 - name: "customers"

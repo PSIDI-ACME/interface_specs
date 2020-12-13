@@ -1,0 +1,236 @@
+openapi: 3.0.0
+info:
+  description: "Swagger proposed server for the Review Product infrastructure at ACME .Inc"
+  version: "0.1"
+  title: "ACME Reviews - PSIDI"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "1171071@isep.ipp.pt"
+    
+servers:
+  - url: https://psidi-customers.herokuapp.com/v1
+    description: Profile server 
+    
+tags:
+- name: "customers"
+  description: "Handles the Profile service requests"
+- name: "products"
+  description: "Handles the Catalog service requests"
+- name: "reviews"
+  description: "Handles the Evaluation service requests"
+
+paths:
+
+####### Customer ########
+
+  /customers:
+    post:
+      tags:
+      - "customers"
+      summary: "Register a New Customer"
+      description: ""
+      operationId: "registerCustomer"
+      requestBody:
+        required: true
+        description: "The data used to create a customer (name, username, password, etc)"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Customer"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Customer"
+      responses:
+        '201':
+          description: "Customer Registered"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  customerId:
+                    type: "integer"
+                    format: "int64"
+                    description: "ID of the created user"
+            application/xml:
+              schema:
+                type: "object"
+                xml: 
+                  name: "customer"
+                properties:
+                  customerId:
+                    type: "integer"
+                    format: "int64"
+                    description: "ID of the created user"
+          links:
+            GetCustomerById: 
+              operationId: getCustomer
+              parameters:
+                customerId: '$response.body#/customerId'
+                required: true
+                description: ""
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"  
+      deprecated: false  
+      
+  /customers/{customerId}:
+    get:
+      tags:
+      - "customers"
+      summary: "Get a Customer By Id"
+      description: ""
+      operationId: "getCustomer"
+      parameters:
+        - in: "path"
+          name: "customerId"
+          required: true  
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: "Customer Obtained"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"  
+      security:
+        - OAuth2: [customer_read]
+      deprecated: false  
+
+####### Products #######
+
+  /products:
+    get:
+      tags:
+      - "products"  
+      summary: "Returns all of the Products list from the Catalog, where each product includes the description of name and barcode"
+      description: ""
+      operationId: "getProducts"
+      parameters:
+        - in: "query"
+          name: "Product Name"
+          required: false  
+          schema:
+            type: string
+        - in: "query"
+          name: "Barcode"
+          required: false  
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Products Fetched. Returns a Pagination Object, which contains a list with productIds"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Pagination"
+            application/xml:
+               schema:
+                  $ref: "#/components/schemas/Pagination"
+          links:
+            GetProductsById: 
+              operationId: getProduct
+              parameters:
+                productId: '$response.body#/products/productId'
+                required: true
+                description: ""
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"
+      deprecated: false  
+
+  /products/{productId}:
+    get:
+      tags:
+      - "products"
+      summary: "Get a Product By Id"
+      description: "Returns a certain product according to an id that the API user inserts"
+      operationId: "getProduct"
+      parameters:
+        - in: "path"
+          name: "productId"
+          required: true  
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: "Product Obtained"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Product"
+            application/xml:
+               schema:
+                  $ref: "#/components/schemas/Product"
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"  
+      deprecated: false  
+
+components:
+  schemas:
+    Customer:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          readOnly: true
+        username:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        email:
+          type: "string"
+        date:
+          type: "string"
+          format: "date"
+        status:
+          type: "object"
+          format: ""
+      xml:
+        name: "Customer"
+        
+    
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize #to be changed#
+          tokenUrl: https://example.com/oauth/token             #to be changed#
+          scopes:
+            customer_read: Grants customers read access
+            customer_write: Grants customers write access
+            moderator: Grants access to moderator operations
