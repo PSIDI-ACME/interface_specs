@@ -204,7 +204,7 @@ paths:
 ####### Reviews ########
 
   /reviews/{reviewId}:
-    put:
+    patch:
       tags:
       - "reviews"  
       summary: "Update a Review Status"
@@ -236,9 +236,8 @@ paths:
                 type: "object"
                 properties:
                   reviewId:
-                    type: "integer"
-                    format: "int64"
-                    description: "ID of the updated review"
+                    type: "string"
+                    default: "https://example.org/review/id"
             application/xml:
               schema:
                 type: "object"
@@ -300,6 +299,107 @@ paths:
       deprecated: false  
       
   /reviews:
+    get:
+      tags:
+      - "reviews"  
+      summary: "Get reviews by Status, Customer ID or Product"
+      description: "If the user is anonymous, the productId is required. Otherwise, if a valid customer OAUTH authentication exists, then its reviews are listed"
+      operationId: "getPendingReviews"
+      parameters:
+        - in: "query"
+          name: "status"
+          required: true  
+          schema:
+            type: string
+            default: "pending"
+        - in: "query"
+          name: "product ID"
+          required: false  
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Reviews Fetched. If the OAUTH authorizes a customer, returns his or her own reviews with the given parameters. Otherwise, if the OAUTH authorizes a moderator, returns all reviews with the given parameters. "
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Pagination"
+            application/xml:
+               schema:
+                  $ref: "#/components/schemas/Pagination"
+          links:
+            GetReviewById: 
+              operationId: getReview
+              parameters:
+                reviewId: '$response.body#/reviewId'
+                required: true
+                description: ""
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"  
+      security:
+        - OAuth2: [customer_read, moderator]
+        
+    post:
+      tags:
+      - "reviews"  
+      summary: "Post a new Review"
+      description: ""
+      operationId: "postReview"
+      requestBody:
+        required: true
+        description: "Data required to post a review (score, reviewDescription)"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Review"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Review"
+      responses:
+        '201':
+          description: "Review sent for approval"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  reviewId:
+                    type: "string"
+                    default: "https://example.org/review/id"
+                    description: "Review ID"
+            application/xml:
+              schema:
+                type: "object"
+                xml: 
+                  name: "review"
+                properties:
+                  reviewId:
+                    type: "integer"
+                    format: "int64"
+                    description: "Review ID"
+          links:
+            GetReviewById: 
+              operationId: getReview
+              parameters:
+                reviewId: '$response.body#/reviewId'
+                required: true
+                description: ""
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"    
+      security:
+        - OAuth2: [customer_write]
     get:
       tags:
       - "reviews"  
