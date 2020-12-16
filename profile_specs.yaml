@@ -9,15 +9,11 @@ info:
     
 servers:
   - url: https://psidi-customers.herokuapp.com/v1
-    description: Profile server 
+    description: Profile server   
     
 tags:
 - name: "customers"
   description: "Handles the Profile service requests"
-- name: "products"
-  description: "Handles the Catalog service requests"
-- name: "reviews"
-  description: "Handles the Evaluation service requests"
 
 paths:
 
@@ -49,9 +45,8 @@ paths:
                 type: "object"
                 properties:
                   customerId:
-                    type: "integer"
-                    format: "int64"
-                    description: "ID of the created user"
+                    type: "string"
+                    default: "https://psidi-customers.herokuapp.com/v1/customers/:id"
             application/xml:
               schema:
                 type: "object"
@@ -118,84 +113,7 @@ paths:
       security:
         - OAuth2: [customer_read]
       deprecated: false  
-
-####### Products #######
-
-  /products:
-    get:
-      tags:
-      - "products"  
-      summary: "Returns all of the Products list from the Catalog, where each product includes the description of name and barcode"
-      description: ""
-      operationId: "getProducts"
-      parameters:
-        - in: "query"
-          name: "Product Name"
-          required: false  
-          schema:
-            type: string
-        - in: "query"
-          name: "Barcode"
-          required: false  
-          schema:
-            type: string
-      responses:
-        '200':
-          description: "Products Fetched. Returns a Pagination Object, which contains a list with productIds"
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/Pagination"
-            application/xml:
-               schema:
-                  $ref: "#/components/schemas/Pagination"
-          links:
-            GetProductsById: 
-              operationId: getProduct
-              parameters:
-                productId: '$response.body#/products/productId'
-                required: true
-                description: ""
-        "404":
-          description: "Not Found"
-        "500":
-          description: "Internal Server Request"      
-        "503":
-          description: "Service Unavailable"
-      deprecated: false  
-
-  /products/{productId}:
-    get:
-      tags:
-      - "products"
-      summary: "Get a Product By Id"
-      description: "Returns a certain product according to an id that the API user inserts"
-      operationId: "getProduct"
-      parameters:
-        - in: "path"
-          name: "productId"
-          required: true  
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "200":
-          description: "Product Obtained"
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/Product"
-            application/xml:
-               schema:
-                  $ref: "#/components/schemas/Product"
-        "404":
-          description: "Not Found"
-        "500":
-          description: "Internal Server Request"      
-        "503":
-          description: "Service Unavailable"  
-      deprecated: false  
-
+        
 components:
   schemas:
     Customer:
@@ -221,8 +139,24 @@ components:
           format: ""
       xml:
         name: "Customer"
-        
     
+    Pagination:
+      type: "object"
+      properties:
+        previous: 
+          type: "string"
+        next: 
+          type: "string"
+        count:
+          type: "number"
+        listOfURIs:
+          type: "array"
+          items:
+            type: "string"
+            default: "https://example.org/example/:id"
+      xml:
+        name: "Pagination"    
+
   securitySchemes:
     OAuth2:
       type: oauth2

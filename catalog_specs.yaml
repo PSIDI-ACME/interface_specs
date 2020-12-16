@@ -12,12 +12,8 @@ servers:
     description: Catalog server 
       
 tags:
-- name: "customers"
-  description: "Handles the Profile service requests"
 - name: "products"
   description: "Handles the Catalog service requests"
-- name: "reviews"
-  description: "Handles the Evaluation service requests"
 
 paths:
 

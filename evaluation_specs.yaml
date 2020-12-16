@@ -5,17 +5,13 @@ info:
   title: "ACME Reviews - PSIDI"
   termsOfService: "http://swagger.io/terms/"
   contact:
-    email: "1171071@isep.ipp.pt"
+    email: "11804281@isep.ipp.pt"
     
 servers:
   - url: https://reviews-psidi.herokuapp.com/
     description: Evaluation server 
     
 tags:
-- name: "customers"
-  description: "Handles the Profile service requests"
-- name: "products"
-  description: "Handles the Catalog service requests"
 - name: "reviews"
   description: "Handles the Evaluation service requests"
 
@@ -37,10 +33,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Review"
+              $ref: "#/components/schemas/Review-Status"
           application/xml:
             schema:
-              $ref: "#/components/schemas/Review"
+              $ref: "#/components/schemas/Review-Status"
       parameters:
         - in: "path"
           name: "reviewId"
@@ -57,8 +53,7 @@ paths:
                 type: "object"
                 properties:
                   reviewId:
-                    type: "string"
-                    default: "https://example.org/review/id"
+                    default: "https://reviews-psidi.herokuapp.com/reviews/:id"
             application/xml:
               schema:
                 type: "object"
@@ -176,10 +171,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Review"
+              $ref: "#/components/schemas/Review-Create"
           application/xml:
             schema:
-              $ref: "#/components/schemas/Review"
+              $ref: "#/components/schemas/Review-Create"
       responses:
         '201':
           description: "Review sent for approval"
@@ -221,107 +216,7 @@ paths:
           description: "Service Unavailable"    
       security:
         - OAuth2: [customer_write]
-    get:
-      tags:
-      - "reviews"  
-      summary: "Get reviews by Status, Customer ID or Product"
-      description: "If the user is anonymous, the productId is required. Otherwise, if a valid customer OAUTH authentication exists, then its reviews are listed"
-      operationId: "getPendingReviews"
-      parameters:
-        - in: "query"
-          name: "status"
-          required: true  
-          schema:
-            type: string
-            default: "pending"
-        - in: "query"
-          name: "product ID"
-          required: false  
-          schema:
-            type: string
-      responses:
-        '200':
-          description: "Reviews Fetched. If the OAUTH authorizes a customer, returns his or her own reviews with the given parameters. Otherwise, if the OAUTH authorizes a moderator, returns all reviews with the given parameters. "
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/Pagination"
-            application/xml:
-               schema:
-                  $ref: "#/components/schemas/Pagination"
-          links:
-            GetReviewById: 
-              operationId: getReview
-              parameters:
-                reviewId: '$response.body#/reviewId'
-                required: true
-                description: ""
-        "404":
-          description: "Not Found"
-        "500":
-          description: "Internal Server Request"      
-        "503":
-          description: "Service Unavailable"  
-      security:
-        - OAuth2: [customer_read, moderator]
-        
-    post:
-      tags:
-      - "reviews"  
-      summary: "Post a new Review"
-      description: ""
-      operationId: "postReview"
-      requestBody:
-        required: true
-        description: "Data required to post a review (score, reviewDescription)"
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Review"
-          application/xml:
-            schema:
-              $ref: "#/components/schemas/Review"
-      responses:
-        '201':
-          description: "Review sent for approval"
-          content:
-            application/json:
-              schema:
-                type: "object"
-                properties:
-                  reviewId:
-                    type: "integer"
-                    format: "int64"
-                    description: "Review ID"
-            application/xml:
-              schema:
-                type: "object"
-                xml: 
-                  name: "review"
-                properties:
-                  reviewId:
-                    type: "integer"
-                    format: "int64"
-                    description: "Review ID"
-          links:
-            GetReviewById: 
-              operationId: getReview
-              parameters:
-                reviewId: '$response.body#/reviewId'
-                required: true
-                description: ""
-        "204":
-          description: "No Content"
-        "400":
-          description: "Bad Request"
-        "404":
-          description: "Not Found"
-        "500":
-          description: "Internal Server Request"      
-        "503":
-          description: "Service Unavailable"    
-      security:
-        - OAuth2: [customer_write]
+  
         
 components:
   schemas:
@@ -349,6 +244,35 @@ components:
             - "rejected"
       xml:
         name: "Review"    
+    Review-Status:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          readOnly: true
+        status:
+          type: "string"
+          enum:
+            - "pending"
+            - "accepted"
+            - "rejected"
+      xml:
+        name: "Review" 
+        
+    Review-Create:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          readOnly: true
+        score:
+          type: "number"
+        reviewDescription:
+          type: "string"
+      xml:
+        name: "Review"
     
     Pagination:
       type: "object"
@@ -363,6 +287,7 @@ components:
           type: "array"
           items:
             type: "string"
+            default: "https://example.org/example/:id"
       xml:
         name: "Pagination"    
 
