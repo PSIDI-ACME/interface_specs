@@ -501,7 +501,8 @@ components:
         reviews:
           type: "array"
           items:
-            type: "string"  
+            type: "string"
+            default: "https://reviews-psidi.herokuapp.com/reviews/:id" 
       xml:
         name: "Product"  
         
