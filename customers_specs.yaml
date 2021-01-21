@@ -119,10 +119,24 @@ components:
     Customer:
       type: "object"
       properties:
-        id:
-          type: "integer"
-          format: "int64"
+        _embedded:
+          type: "object"
           readOnly: true
+          default: '
+          {"review": 
+            { "_links": 
+              { "self": 
+                { "href":  "http://reviews-psidi.herokuapp.com/v1/reviews?customerId={?id}" } 
+              }
+            }
+          }'
+        _links:
+          type: "object"
+          readOnly: true
+          default: ' 
+            { "self": 
+              { "href":  "https://psidi-customers.herokuapp.com/v1/customers/{:id}" } 
+            }'
         username:
           type: "string"
         firstName:
@@ -131,31 +145,8 @@ components:
           type: "string"
         email:
           type: "string"
-        date:
-          type: "string"
-          format: "date"
-        status:
-          type: "object"
-          format: ""
       xml:
         name: "Customer"
-    
-    Pagination:
-      type: "object"
-      properties:
-        previous: 
-          type: "string"
-        next: 
-          type: "string"
-        count:
-          type: "number"
-        listOfURIs:
-          type: "array"
-          items:
-            type: "string"
-            default: "https://example.org/example/:id"
-      xml:
-        name: "Pagination"    
 
   securitySchemes:
     OAuth2:

@@ -44,10 +44,10 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Pagination"
+                  $ref: "#/components/schemas/Products"
             application/xml:
                schema:
-                  $ref: "#/components/schemas/Pagination"
+                  $ref: "#/components/schemas/Products"
           links:
             GetProductsById: 
               operationId: getProduct
@@ -101,6 +101,33 @@ components:
     Product:
       type: "object"
       properties:
+        _embedded:
+          type: "object"
+          readOnly: true
+          default: '
+          [{"review": 
+            { "_links": 
+              { "self": 
+                { "href":  "http://reviews-psidi.herokuapp.com/v1/reviews?productId={?id}" } 
+              }
+            }
+          },
+          
+          {"rating": 
+            { "_links": 
+              [{ "self": 
+                { "href":  "http:/catalog-psidi.herokuapp.com/v1/reviews?productId={?id}/rating" } 
+              },
+              { "productRating": "number" }]
+            }
+          }]'
+        _links:
+          type: "object"
+          readOnly: true
+          default: ' 
+            { "self": 
+              { "href":  "http://catalog-psidi.herokuapp.com/v1/product/{:id}" } 
+            }'
         id:
           type: "integer"
           format: "int64"
@@ -116,15 +143,63 @@ components:
         barcode:
           type: "object"
           allOf:
-            - $ref: '#/components/schemas/ProductBarcode'
-        reviews:
-          type: "array"
-          items:
-            type: "string"
-            default: "https://reviews-psidi.herokuapp.com/reviews/:id" 
-      xml:
-        name: "Product"  
+            - $ref: '#/components/schemas/ProductBarcode'  
         
+    Products:
+      type: "object"
+      properties:
+        _embedded:
+          type: "object"
+          readOnly: true
+          default: '
+          [{"product": 
+            { "_links": 
+              [{ "self": 
+                { "href":  "/products/1" } 
+              },
+              { "rating": 
+                { "href":  "/products/1/rating" } 
+              }]
+            }
+          },
+          {"product": 
+            { "_links": 
+              [{ "self": 
+                { "href":  "/products/2" } 
+              },
+              { "rating": 
+                { "href":  "/products/2/rating" } 
+              }]
+            }
+          }]'
+        _links:
+          type: "object"
+          readOnly: true
+          default: ' 
+            [{ "self": 
+                { "href":  "http://catalog-psidi.herokuapp.com/v1/products" } 
+              },
+              { "next": 
+                { "href":  "http://catalog-psidi.herokuapp.com/v1/products?page=2" } 
+              },
+              { "previous": 
+                { "href":  "http://catalog-psidi.herokuapp.com/v1/products?page=1" } 
+              },
+              { "start": 
+                { "href":  "http://catalog-psidi.herokuapp.com/v1/products?page=1" } 
+              },
+              { "last": 
+                { "href":  "http://catalog-psidi.herokuapp.com/v1/products?page={?lastPage}" } 
+              },
+              { "find": 
+                { "href":  "http://catalog-psidi.herokuapp.com/v1/products/{:id}" } 
+              },
+              { "items": 
+                [{ "href":  "/products/1" },{ "href":  "/products/2" },{ "href":  "/products/3" }] 
+              }]'
+        totalNumberOfResults:
+          type: "integer"
+    
     ProductBarcode:
       type: "object"
       properties:
@@ -141,22 +216,6 @@ components:
       xml:
         name: "ProductBarcode"
     
-    Pagination:
-      type: "object"
-      properties:
-        previous: 
-          type: "string"
-        next: 
-          type: "string"
-        count:
-          type: "number"
-        listOfURIs:
-          type: "array"
-          items:
-            type: "string"
-      xml:
-        name: "Pagination"    
-
   securitySchemes:
     OAuth2:
       type: oauth2

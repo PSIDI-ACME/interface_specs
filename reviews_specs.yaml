@@ -139,10 +139,10 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Pagination"
+                  $ref: "#/components/schemas/Reviews"
             application/xml:
                schema:
-                  $ref: "#/components/schemas/Pagination"
+                  $ref: "#/components/schemas/Reviews"
           links:
             GetReviewById: 
               operationId: getReview
@@ -274,22 +274,68 @@ components:
       xml:
         name: "Review"
     
-    Pagination:
+    Reviews:
       type: "object"
       properties:
-        previous: 
-          type: "string"
-        next: 
-          type: "string"
-        count:
-          type: "number"
-        listOfURIs:
-          type: "array"
-          items:
-            type: "string"
-            default: "https://example.org/example/:id"
-      xml:
-        name: "Pagination"    
+        _embedded:
+          type: "object"
+          readOnly: true
+          default: '
+          [{"product": 
+            { "_links": 
+              [{ "self": 
+                { "href":  "/reviews/1" } 
+              },
+              { "customer": 
+                { "href":  "https://psidi-customers.herokuapp.com/v1/customer/{:id}" } 
+              },
+              { "product": 
+                { "href":  "http://catalog-psidi.herokuapp.com/v1/product/{:id}" } 
+              },
+              { "funnyFact": 
+                { "href":  "http://numbersapi/{:month}/{:day}" } 
+              },
+              { "accept": 
+                { "href":  "/reviews/1/accepted" } 
+              },
+              { "reject": 
+                { "href":  "/products/1/reject" } 
+              },
+              { "report": 
+                { "href":  "/reviews/1/report" } 
+              },
+              { "vote": 
+                { "href":  "/products/1/vote" } 
+              }]
+            }
+          }]'
+        _links:
+          type: "object"
+          readOnly: true
+          default: ' 
+            [{ "self": 
+                { "href":  "http://reviews-psidi.herokuapp.com/v1/reviews{?productId}" } 
+              },
+              { "next": 
+                { "href":  "http://reviews-psidi.herokuapp.com/v1/reviews{?productId}&page=2" } 
+              },
+              { "previous": 
+                { "href":  "http://reviews-psidi.herokuapp.com/v1/reviews{?productId}&page=1" } 
+              },
+              { "start": 
+                { "href":  "http://reviews-psidi.herokuapp.com/v1/reviews{?productId}&page=1" } 
+              },
+              { "last": 
+                { "href":  "http://reviews-psidi.herokuapp.com/v1/reviews{?productId}{&lastPage}" } 
+              },
+              { "find": 
+                { "href":  "http://reviews-psidi.herokuapp.com/v1/reviews/{:id}" } 
+              },
+              { "items": 
+                [{ "href":  "/reviews/1" },{ "href":  "/reviews/2" },{ "href":  "/reviews/3" }] 
+              }]'
+        totalNumberOfResults:
+          type: "integer"    
 
   securitySchemes:
     OAuth2:
