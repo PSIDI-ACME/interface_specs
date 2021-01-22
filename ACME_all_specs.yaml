@@ -197,7 +197,40 @@ paths:
           description: "Internal Server Request"      
         "503":
           description: "Service Unavailable"  
+      deprecated: false
+      
+  /products/{productId}/rating:
+    get:
+      tags:
+      - "products"
+      summary: "Get a Product Rating"
+      description: "Returns a certain product rating, which is calculated according to its reviews' score"
+      operationId: "getProductRating"
+      parameters:
+        - in: "path"
+          name: "productId"
+          required: true  
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: "Product Obtained"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Product-Rating"
+            application/xml:
+               schema:
+                  $ref: "#/components/schemas/Product-Rating"
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"  
       deprecated: false  
+      
       
    
 ####### Reviews ########
@@ -295,6 +328,83 @@ paths:
         "503":
           description: "Service Unavailable"  
       deprecated: false  
+      
+      
+  /reviews/{reviewId}/report:
+    get:
+      tags:
+      - "reviews"  
+      summary: "Report a Review"
+      description: ""
+      operationId: "reportReview"
+      parameters:
+        - in: "path"
+          name: "reviewId"
+          required: true  
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: "Review Reported"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review-Report"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Review-Report"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"  
+      security:
+        - OAuth2: [customer_write]
+        
+    
+  /reviews/{reviewId}/vote:
+    get:
+      tags:
+      - "reviews"  
+      summary: "Vote for a Review"
+      description: ""
+      operationId: "voteReview"
+      parameters:
+        - in: "path"
+          name: "reviewId"
+          required: true  
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: "Review Voted"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review-Vote"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Review-Vote"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"  
+      security:
+        - OAuth2: [customer_write, moderator]      
+     
       
   /reviews:
     get:
@@ -619,7 +729,7 @@ components:
           type: "object"
           readOnly: true
           default: '
-          [{"product": 
+          [{"reviews": 
             { "_links": 
               [{ "self": 
                 { "href":  "/reviews/1" } 
@@ -675,16 +785,16 @@ components:
         totalNumberOfResults:
           type: "integer"
     
-Product-Rating:
-type: "object"
-properties:
-          _links:
+    Product-Rating:
+      type: "object"
+      properties:
+        _links:
           type: "object"
           readOnly: true
           default: '
           [
             {"self": 
-              { "href": "http://localhost:3000/products/{:Id}/rating"} 
+              { "href": "http://product-psidi.herokuapp.com/v1/{:Id}/rating"}  
             },
             {"product":
               {"href":"http://product-psidi.herokuapp.com/v1/products/{?id}"}
@@ -695,12 +805,11 @@ properties:
           ]'
         ratingValue:
           type: "integer"
-          value: "12"
 
-Review-Report:
-type: "object"
-properties:
-          _links:
+    Review-Report:
+      type: "object"
+      properties:
+        _links:
           type: "object"
           readOnly: true
           default: '
@@ -725,10 +834,10 @@ properties:
             }
           ]'
 
-Review-Vote:
-type: "object"
-properties:
-          _links:
+    Review-Vote:
+      type: "object"
+      properties:
+        _links:
           type: "object"
           readOnly: true
           default: '
@@ -743,8 +852,8 @@ properties:
               {"href":"http://psidi-customers.herokuapp.com/v1/customers/{?id}"}
             }
           ]'
-        submission:
-          type: "flag"
+        numberOfVotes:
+          type: "integer"
 
   securitySchemes:
     OAuth2:

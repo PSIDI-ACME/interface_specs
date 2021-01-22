@@ -95,6 +95,38 @@ paths:
           description: "Service Unavailable"  
       deprecated: false  
    
+  /products/{productId}/rating:
+    get:
+      tags:
+      - "products"
+      summary: "Get a Product Rating"
+      description: "Returns a certain product rating, which is calculated according to its reviews' score"
+      operationId: "getProductRating"
+      parameters:
+        - in: "path"
+          name: "productId"
+          required: true  
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: "Product Obtained"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Product-Rating"
+            application/xml:
+               schema:
+                  $ref: "#/components/schemas/Product-Rating"
+        "404":
+          description: "Not Found"
+        "500":
+          description: "Internal Server Request"      
+        "503":
+          description: "Service Unavailable"  
+      deprecated: false 
+      
 components:
   schemas:  
 
@@ -216,16 +248,16 @@ components:
       xml:
         name: "ProductBarcode"
     
-Product-Rating:
-type: "object"
-properties:
-          _links:
+    Product-Rating:
+      type: "object"
+      properties:
+        _links:
           type: "object"
           readOnly: true
           default: '
           [
             {"self": 
-              { "href": "http://localhost:3000/products/{:Id}/rating"} 
+              { "href": "http://product-psidi.herokuapp.com/v1/{:Id}/rating"} 
             },
             {"product":
               {"href":"http://product-psidi.herokuapp.com/v1/products/{?id}"}
@@ -236,7 +268,6 @@ properties:
           ]'
         ratingValue:
           type: "integer"
-          value: "12"
 
   securitySchemes:
     OAuth2:
