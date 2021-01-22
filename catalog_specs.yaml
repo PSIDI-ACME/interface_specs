@@ -216,6 +216,28 @@ components:
       xml:
         name: "ProductBarcode"
     
+Product-Rating:
+type: "object"
+properties:
+          _links:
+          type: "object"
+          readOnly: true
+          default: '
+          [
+            {"self": 
+              { "href": "http://localhost:3000/products/{:Id}/rating"} 
+            },
+            {"product":
+              {"href":"http://product-psidi.herokuapp.com/v1/products/{?id}"}
+            },
+            {"reviews":
+              {"href":"http://reviews-psidi.herokuapp.com/v1/reviews/{?productId}"}
+            }
+          ]'
+        ratingValue:
+          type: "integer"
+          value: "12"
+
   securitySchemes:
     OAuth2:
       type: oauth2

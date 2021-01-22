@@ -337,6 +337,55 @@ components:
         totalNumberOfResults:
           type: "integer"    
 
+Review-Report:
+type: "object"
+properties:
+          _links:
+          type: "object"
+          readOnly: true
+          default: '
+          [
+            {"self": 
+              { "href": "http://reviews-psidi.herokuapp.com/v1/reviews/{?id}/report" }
+            },
+            {"review":
+              {"href":"http://reviews-psidi.herokuapp.com/v1/reviews/{?id}" }
+            },
+            {"customer":
+              {"href":"http://psidi-customers.herokuapp.com/v1/customers/{?id}" }
+            },
+            {"product":
+              {"href":"http://product-psidi.herokuapp.com/v1/product/{?id}" }
+            },
+            {"accepted":
+              {"href":"http://reviews-psidi.herokuapp.com/v1/reviews/{?id}/accepted" }
+            },
+            {"rejected":
+              {"href":"http://reviews-psidi.herokuapp.com/v1/reviews/{?id}/rejected" }
+            }
+          ]'
+
+Review-Vote:
+type: "object"
+properties:
+          _links:
+          type: "object"
+          readOnly: true
+          default: '
+          [
+            {"self": 
+              { "href": "http://reviews-psidi.herokuapp.com/v1/reviews/reviewId/vote"} 
+            },
+            {"review":
+              {"href":"http://reviews-psidi.herokuapp.com/v1/reviews/{?id}"}
+            },
+            {"customer":
+              {"href":"http://psidi-customers.herokuapp.com/v1/customers/{?id}"}
+            }
+          ]'
+        submission:
+          type: "flag"
+
   securitySchemes:
     OAuth2:
       type: oauth2
