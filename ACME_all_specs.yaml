@@ -383,7 +383,7 @@ paths:
                   sent-review:
                     type: "string"
                     description: "sent review"
-                    default: "https://example.org/review/id"
+                    default: "http://reviews-psidi.herokuapp.com/reviews/:id"
           links:
             GetReviewById: 
               operationId: getReview

@@ -159,7 +159,7 @@ paths:
             application/json:
               schema:
                 type: "string"
-                default: "https://example.org/review/id"
+                default: "http://reviews-psidi.herokuapp.com/reviews/:id"
                     
             application/xml:
               schema:
